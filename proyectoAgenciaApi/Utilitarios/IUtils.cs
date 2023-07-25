@@ -2,8 +2,12 @@
 {
     public interface IUtils
     {
-        public string CreatePassword(int length);
+        public string GenerarClaveTemporal(int length);
 
         public void EnviarCorreo(string Destinatario, string Asunto, string Mensaje);
+
+        public string Encriptar(string toEncrypt);
+
+        public string GenerarToken(long idUsuario);
     }
 }
