@@ -11,6 +11,7 @@ namespace proyectoAgenciaApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsuarioController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -237,10 +238,112 @@ namespace proyectoAgenciaApi.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("ConsultarUsuario")]
+        public IActionResult ConsultarUsuario(long q)
+        {
+            var resultado = new UsuarioEnt();
+            var respuesta = new UsuarioEntRespuesta();
+            long IdUsuario = q;
+
+            try
+            {
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("proyectoAgencia")))
+                {
+                    resultado = connection.Query<UsuarioEnt>("CONSULTAR_USUARIO",
+                        new { IdUsuario },
+                        commandType: System.Data.CommandType.StoredProcedure).FirstOrDefault();
+
+                    if (resultado == null)
+                    {
+                        respuesta.Codigo = 2;
+                        respuesta.Mensaje = "No se encontró la información de su usuario";
+                        return Ok(respuesta);
+                    }
+
+                    respuesta.Codigo = 1;
+                    respuesta.Objeto = resultado;
+                    return Ok(respuesta);
+                }
+            }
+            catch (Exception)
+            {
+                respuesta.Codigo = 3;
+                respuesta.Mensaje = "Se presentó un inconveniente.";
+                return Ok(respuesta);
+            }
+        }
+
+        [HttpPut]
+        [Route("CambiarEstado")]
+        public IActionResult CambiarEstado(UsuarioEnt entidad)
+        {
+            var respuesta = new UsuarioEntRespuesta();
+
+            try
+            {
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("proyectoAgencia")))
+                {
+                    int confirmacion = connection.Execute("ACTUALIZAR_ESTADO",
+                        new { entidad.IdUsuario },
+                        commandType: System.Data.CommandType.StoredProcedure);
+
+                    if (confirmacion <= 0)
+                    {
+                        respuesta.Codigo = 2;
+                        respuesta.Mensaje = "No se actualizó la información del estado";
+                        return Ok(respuesta);
+                    }
+
+                    respuesta.Codigo = 1;
+                    respuesta.Mensaje = "El estado fue actualizado correctamente";
+                    respuesta.ResultadoTransaccion = true;
+                    return Ok(respuesta);
+                }
+            }
+            catch (Exception)
+            {
+                respuesta.Codigo = 3;
+                respuesta.Mensaje = "Se presentó un inconveniente.";
+                return Ok(respuesta);
+            }
+        }
+
+        [HttpGet]
+        [Route("ConsultarRoles")]
+        public IActionResult ConsultarRoles()
+        {
+            var resultado = new List<RolEnt>();
+            var respuesta = new RolEntRespuesta();
+
+            try
+            {
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("proyectoAgencia")))
+                {
+                    resultado = connection.Query<RolEnt>("CONSULTAR_ROLES",
+                        new { },
+                        commandType: System.Data.CommandType.StoredProcedure).ToList();
+
+                    if (resultado.Count == 0)
+                    {
+                        respuesta.Codigo = 2;
+                        respuesta.Mensaje = "No se encontró la información de los usuarios";
+                        return Ok(respuesta);
+                    }
+
+                    respuesta.Codigo = 1;
+                    respuesta.Mensaje = "Información consultada correctamente";
+                    respuesta.Objetos = resultado;
+                    return Ok(respuesta);
+                }
+            }
+            catch (Exception)
+            {
+                respuesta.Codigo = 3;
+                respuesta.Mensaje = "Se presentó un inconveniente.";
+                return Ok(respuesta);
+            }
+        }
+
     }
 }
-
-
-
-
-

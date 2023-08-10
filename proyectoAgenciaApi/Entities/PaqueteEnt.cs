@@ -11,13 +11,15 @@
 
     public class PaqueteEnt
         {
-            public long IdPaquete { get; set; }
-            public decimal Precio { get; set; }
-            public string Nombre { get; set; } = string.Empty;
-            public string Descripcion { get; set; } = string.Empty;
-            public string Agente { get; set; } = string.Empty;
-            public DateTime FechaInicio { get; set; }
-            public string Imagen { get; set; } = string.Empty;
-        }
+        public long IdCurso { get; set; }
+        public decimal Precio { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public string Descripcion { get; set; } = string.Empty;
+        public string Instructor { get; set; } = string.Empty;
+        public DateTime FechaInicio { get; set; }
+        public DateTime Finalizacion { get; set; }
+        public int Campo { get; set; }
+        public string Imagen { get; set; } = string.Empty;
+    }
     }
 

@@ -24,6 +24,8 @@ namespace proyectoAgenciaApi.Entities
         public bool ContrasennaTemp { get; set; }
         public DateTime ContrasennaVenc { get; set; }
         public string Token { get; set; } = string.Empty;
+        public int IdRol { get; set; }
+        public string NombreRol { get; set; } = string.Empty;
     }
 
 }
