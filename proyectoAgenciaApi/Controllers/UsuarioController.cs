@@ -309,6 +309,41 @@ namespace proyectoAgenciaApi.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("EditarUsuario")]
+        public IActionResult EditarUsuario(UsuarioEnt entidad)
+        {
+            var respuesta = new UsuarioEntRespuesta();
+
+            try
+            {
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("proyectoAgencia")))
+                {
+                    int confirmacion = connection.Execute("ACTUALIZAR_USUARIO",
+                        new { entidad.IdUsuario, entidad.CorreoElectronico, entidad.IdRol },
+                        commandType: System.Data.CommandType.StoredProcedure);
+
+                    if (confirmacion <= 0)
+                    {
+                        respuesta.Codigo = 2;
+                        respuesta.Mensaje = "No se actualizó la información del usuario";
+                        return Ok(respuesta);
+                    }
+
+                    respuesta.Codigo = 1;
+                    respuesta.Mensaje = "El estado fue actualizado correctamente";
+                    respuesta.ResultadoTransaccion = true;
+                    return Ok(respuesta);
+                }
+            }
+            catch (Exception)
+            {
+                respuesta.Codigo = 3;
+                respuesta.Mensaje = "Se presentó un inconveniente.";
+                return Ok(respuesta);
+            }
+        }
+
         [HttpGet]
         [Route("ConsultarRoles")]
         public IActionResult ConsultarRoles()
@@ -337,10 +372,10 @@ namespace proyectoAgenciaApi.Controllers
                     return Ok(respuesta);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 respuesta.Codigo = 3;
-                respuesta.Mensaje = "Se presentó un inconveniente.";
+                respuesta.Mensaje = ex.Message;
                 return Ok(respuesta);
             }
         }
