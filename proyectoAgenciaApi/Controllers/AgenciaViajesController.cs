@@ -108,7 +108,7 @@ namespace proyectoAgenciaApi.Controllers
             {
                 using (var connection = new SqlConnection(_configuration.GetConnectionString("proyectoAgencia")))
                 {
-                    int confirmacion = connection.Execute("ACTUALIZAR_ESTADO",
+                    int confirmacion = connection.Execute("ACTUALIZAR_ESTADOagencia",
                         new { entidad.IdAgencia },
                         commandType: System.Data.CommandType.StoredProcedure);
 
@@ -170,6 +170,42 @@ namespace proyectoAgenciaApi.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("EditarAgencia")]
+        public IActionResult EditarAgencia(AgenciaViajesEnt entidad)
+        {
+            var respuesta = new AgenciaViajesEntRespuesta();
+
+            try
+            {
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("proyectoAgencia")))
+                {
+                    int confirmacion = connection.Execute("ACTUALIZAR_AGENCIA",
+                        new { entidad.IdAgencia, entidad.NombreAgencia, entidad.Direccion, entidad.Ciudad },
+                        commandType: System.Data.CommandType.StoredProcedure);
+
+
+
+                    if (confirmacion <= 0)
+                    {
+                        respuesta.Codigo = 2;
+                        respuesta.Mensaje = "No se actualizó la información de la agencia";
+                        return Ok(respuesta);
+                    }
+
+                    respuesta.Codigo = 1;
+                    respuesta.Mensaje = "La agencia fue actualizadoa correctamente";
+                    respuesta.ResultadoTransaccion = true;
+                    return Ok(respuesta);
+                }
+            }
+            catch (Exception)
+            {
+                respuesta.Codigo = 3;
+                respuesta.Mensaje = "Se presentó un inconveniente.";
+                return Ok(respuesta);
+            }
+        }
 
 
     }
